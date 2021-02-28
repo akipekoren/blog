@@ -22,12 +22,12 @@ class Category(models.Model):
 
 class Post(models.Model):
     title = models.CharField(max_length=300)
-    author=models.ForeignKey(User,on_delete=models.CASCADE, default="admin")
+    author=models.ForeignKey(User,on_delete=models.CASCADE)
     body = models.TextField()
     title_tag = models.CharField(max_length=200)
     date = models.DateField(auto_now_add=True)
     category = models.CharField(max_length=100, default='coding')
-
+    likes = models.ManyToManyField(User, related_name='blog_posts')
 
 
     def __str__(self):
@@ -36,6 +36,11 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         return reverse('home')
+
+
+    def get_total_likes(self):
+        return self.likes.count()
+
 
     
 
