@@ -1,9 +1,10 @@
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post,Category
-from .forms import PostForms,EditForms
+from .models import Post,Category,Comment
+from .forms import PostForms,EditForms,AddCommentForms
 from django.urls import reverse_lazy,reverse
 from django.http import HttpResponseRedirect
+from django.core.paginator import Paginator, EmptyPage
 
 
 # Create your views here.
@@ -21,11 +22,28 @@ class HomeView(ListView):
     ordering = ['-date']
     #ordering = ['-id']
 
+      
+
     def get_context_data(self,*args, **kwargs):
         cat_menu = Category.objects.all()
         context = super(HomeView, self).get_context_data(*args, **kwargs)
         context["cat_menu"] = cat_menu
+
+        post_items = Post.objects.all().order_by('-date')
+
+
+        p = Paginator(post_items,5)
+        page_num = self.request.GET.get('page',1)
+
+        try:
+            page =p.page(page_num)      
+        except EmptyPage:
+            page = p.page(1)
+
+        context["post_items"] = page
         return context
+
+
 
 
 class DetailsView(DetailView):
@@ -34,9 +52,9 @@ class DetailsView(DetailView):
 
 
     def get_context_data(self,*args, **kwargs):
+        
         cat_menu = Category.objects.all()
         context = super(DetailsView, self).get_context_data(*args, **kwargs)
-
 
         count_total_likes = get_object_or_404(Post, id=self.kwargs['pk'])
         total_likes = count_total_likes.get_total_likes()
@@ -47,7 +65,19 @@ class DetailsView(DetailView):
         context["cat_menu"] = cat_menu
         context["total_likes"] =total_likes
         context["liked"] = liked
+        context["commentform"] = AddCommentForms()
         return context  
+
+    def post(self,request,pk):
+        post = get_object_or_404(Post, pk=pk)
+        form =AddCommentForms(request.POST)
+        if form.is_valid():
+           obj  = form.save(commit=False)
+           obj.post = post
+           obj.author = self.request.user
+           obj.save()
+           return HttpResponseRedirect(reverse('article-detail', args=[str(pk)]))
+
 
 
 class AddPostView(CreateView):
@@ -58,20 +88,16 @@ class AddPostView(CreateView):
     #fields=('title', 'body')
 
 
-
 class EditPostView(UpdateView):
     model = Post
     form_class = EditForms
     template_name = 'editPost.html'
     #fields = ['title', 'title_tag', 'body']
 
-
 class DeletePostView(DeleteView):
     model = Post
     template_name = 'deletePost.html'
     success_url = reverse_lazy('home')
-
-
 
 
 class AddCategoryView(CreateView):
@@ -81,9 +107,7 @@ class AddCategoryView(CreateView):
     #fields=('title', 'body')
 
 
-
 def CategoryView(request,cats):
-    print(cats.replace('-', ' ').title())
     category_posts = Post.objects.filter(category=(cats.replace('-', ' ')).title())
 
     return render(request, 'categories.html', {'cats' : cats.replace('-', ' ').title(), 'category_posts' : category_posts})
@@ -92,7 +116,6 @@ def CategoryView(request,cats):
 def CategoryListView(request):
     cat_menu_list = Category.objects.all()
     return render(request, 'categoryList.html',{'cat_menu_list' : cat_menu_list})
-
 
 
 def LikeView(request,pk):
@@ -105,11 +128,5 @@ def LikeView(request,pk):
     else:
         post.likes.add(request.user)
         liked=True
-
-
     return HttpResponseRedirect(reverse('article-detail', args=[str(pk)]))
-
-
-
-
 

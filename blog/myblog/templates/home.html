@@ -4,30 +4,134 @@
  {% block content %}
 
 
-<h1>Posts</h1>
-
+<div class="row">
+<div class="col-sm-2">  
+</div>
+<div class="text-center col-sm-8">
 <ul>
-{% for post in object_list %}
+{% for post in post_items %}
 
-    <li> <a href= "{% url 'article-detail' post.pk %}">{{post.title}} </a> 
-        -<a href="{% url 'category' post.category|slugify %}"> {{post.category}}</a>
-        - {{post.author.first_name}}  {{post.author.last_name}} - {{post.date}} 
-
+    <!-- 
+        <a href= "{% url 'article-detail' post.pk %} ">{{post.title}} </a> 
+    </br>
+        <small>{{post.date}} </small>/ 
+        <a href="{% url 'category' post.category|slugify %}"> {{post.category}}</a> 
+        
         {%if user.is_authenticated %}
-
             {% if user.id == post.author.id%}
-                - <small><a href="{% url 'edit-post' post.pk %}">Edit</a></small>
-                - <small><a href="{% url 'delete-post' post.pk %}">Delete</a></small>
-
+                / <small><a href="{% url 'edit-post' post.pk %}">Edit</a></small>
+                / <small><a href="{% url 'delete-post' post.pk %}">Delete</a></small>
             {%endif%}
-
         {%endif%}
          <br/>
-    {{post.snippet}}
- 
-    </li>
+         <br/>
+         {% if post.header_image%}
+         <img src= "{{post.header_image.url}}" width="150" height="150" >
+         <br><br>
+         {%endif%}
+    {{post.snippet}} 
+    <br/>
+    <b><i><small>  by {{post.author.first_name}}  {{post.author.last_name}}</small></i></b>
+
+    <div class="card mb-3" style="background-color:rgb(227, 227, 236);" >
+        <div class="row g-0">
+          <div class="col-md-2">
+   
+             {% if post.header_image %}
+            <img src="{{post.header_image.url}}" width="200" height="230" class="card-img">
+   
+             {%endif%}
+          </div>
+          <div class="col-md-10">
+            <div class="card-body">
+              <h5 class="card-title"><a href= "{% url 'article-detail' post.pk %} ">{{post.title}} </a> </h5>   
+              <p class="small text-muted"> 
+                <b><i><small>  by {{post.author.first_name}}  {{post.author.last_name}} 
+                     </small></i></b>
+                     / {{post.date}} 
+                     {%if user.is_authenticated %}
+                     {% if user.id == post.author.id%}
+                         / <small><a href="{% url 'edit-post' post.pk %}">Edit</a></small>
+                         / <small><a href="{% url 'delete-post' post.pk %}">Delete</a></small>
+                     {%endif%}
+                 {%endif%}
+                   </p>
+              <p class="card-text">{{post.snippet}}</p>
+         
+            </div>
+                <div class="position-absolute top-80 start-100 translate-middle">
+                    <button type="button" class="btn btn-secondary ">Secondary</button>
+                </div>
+          </div>
+        </div> 
+      </div>
+      -->
+      <div class="card text-center" >
+        {% if post.header_image %}
+        <img class="card-img-top" src="{{post.header_image.url}}" width="400" height="600" alt="Card image cap">
+         {%endif%}
+        <div class="card-body">
+          <h3 class="card-title">{{post.title}}</h3>
+          <p class="small text-muted"> 
+            <b><i><small>  by {{post.author.first_name}}  {{post.author.last_name}} 
+                 </small></i></b>
+                 / {{post.date}} 
+                 {%if user.is_authenticated %}
+                 {% if user.id == post.author.id%}
+                     / <small><a href="{% url 'edit-post' post.pk %}">Edit</a></small>
+                     / <small><a href="{% url 'delete-post' post.pk %}">Delete</a></small>
+                 {%endif%}
+             {%endif%}
+               </p>
+          <p class="card-text">{{post.snippet}}</p>
+          <a href="{% url 'article-detail' post.pk %}" class="btn btn-primary">Read more</a>
+        </div>
+      </div>
+</br>
+</br>
 {%endfor%}
 </ul>
+
+<br>
+<br>
+<ul class="pagination justify-content-center">
+    {% if post_items.has_previous %}
+    <li class="page-item">
+      <a class="page-link" href="?page=1" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+        <span class="sr-only">begin</span>
+      </a>
+    </li>   {% endif %}
+    
+    {% for n in post_items.paginator.page_range %}
+      {% if post_items.number == n %}
+        <li class="page-item active">
+          <span class="page-link">{{ n }}</span>
+        </li>
+      {% elif n > post_items.number|add:'-3' and n < post_items.number|add:'3' %}
+        <li class="page-item"><a class="page-link" href="?page={{ n }}">{{ n }}</a></li>
+      {% endif %}
+    {% endfor %}
+    
+    {% if post_items.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ post_items.paginator.num_pages }}" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+          <span class="sr-only">end</span>
+        </a>
+      </li>
+      {% endif %}  
+     </ul>
+</div>
+
+
+<div class="col-sm-2">
+</div>
+</div>
+</br>
+</br>
+</br>
+</br>
 
 
 {% endblock %}

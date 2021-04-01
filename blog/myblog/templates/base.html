@@ -14,9 +14,34 @@
             {% endblock %} 
         
     </title>
+
+
+
+<script type="text/javascript">
+	document.addEventListener("DOMContentLoaded", function(){
+		
+		window.addEventListener('scroll', function() {
+	       
+			if (window.scrollY > 50) {
+				document.getElementById('navbar_top').classList.add('fixed-top');
+				// add padding top to show content behind navbar
+				navbar_height = document.querySelector('.navbar').offsetHeight;
+				document.body.style.paddingTop = navbar_height + 'px';
+			} else {
+			 	document.getElementById('navbar_top').classList.remove('fixed-top');
+				 // remove padding top from body
+				document.body.style.paddingTop = '0';
+			} 
+		});
+	}); 
+	// DOMContentLoaded  end
+</script>
+
+
+
   </head>
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <body style="background-color:rgb(216, 220, 221);">
+    <nav id="navbar_top" class="navbar navbar-expand-lg navbar-light py-4 navbar-fixed-top" style="background-color: #b7d1e4;">
         <div class="container-fluid">
           <a class="navbar-brand" href="{% url 'home' %}">MyBlog</a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -112,10 +137,15 @@
 
     <br/>
     <div class="container">
+
+    </br>
+    </br>
         {% block content %}
+   
+
+
 
         {% endblock %}
-
 
     </div>
 
