@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from datetime import datetime, date
 from ckeditor.fields import RichTextField
+from ckeditor_uploader.fields import RichTextUploadingField
 
 
 
@@ -23,7 +24,7 @@ class Category(models.Model):
 class Post(models.Model):
     title = models.CharField(max_length=300)    
     author=models.ForeignKey(User,on_delete=models.CASCADE)
-    body = RichTextField(blank=True, null=True)
+    body = RichTextUploadingField(blank=True, null=True)
     title_tag = models.CharField(max_length=200)
     date = models.DateField(auto_now_add=True)
     category = models.CharField(max_length=100, default='coding')

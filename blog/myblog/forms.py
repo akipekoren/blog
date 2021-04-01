@@ -18,10 +18,9 @@ class PostForms(forms.ModelForm):
             'title' : forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Title'}),
             'title_tag' : forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Tag'}),
             'author' : forms.TextInput(attrs={'class' : 'form-control', 'value' : '' , 'id': 'elder', 'type' : 'hidden'}),
-            #'author' : forms.Select(attrs={'class' : 'form-control'}),
             'category' : forms.Select(choices = choice_list, attrs={'class' : 'form-control'}),
             'body' : forms.Textarea(attrs={'class' : 'form-control', 'placeholder': 'Messages'}),
-            'snippet' : forms.Textarea(attrs={'class' : 'form-control' }),
+            'snippet' : forms.Textarea(attrs={'class' : 'form-control'}),
 
         } 
 
@@ -47,5 +46,5 @@ class AddCommentForms(forms.ModelForm):
         fields = ('name', 'body')
         widgets = {
             'name': forms.TextInput(attrs={'class': 'col-sm-12'}),
-            'body': forms.Textarea(attrs={'class': 'form-control'}),
+            'body': forms.Textarea(attrs={'class': 'form-control','rows':4, 'cols':10}),
         }

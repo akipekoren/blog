@@ -34,7 +34,17 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+
 # Application definition
+CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"
+CKEDITOR_UPLOAD_PATH = "uploads/"
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'height': 400,
+        'width': 1115,
+    },
+}
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -46,7 +56,10 @@ INSTALLED_APPS = [
     'myblog',
     'members',
     'ckeditor',
+    'ckeditor_uploader',
 ]
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

@@ -33,6 +33,8 @@
      <hr>
      <br/>
      </div>
+
+<!--
 {% if post.header_image%}
 
 <img src= "{{post.header_image.url}}" width="800" height="400" >
@@ -40,6 +42,8 @@
 <br><br>
 
 {%endif%}
+
+-->
 {{post.body | safe}}
 
 <br/> <br/>
@@ -77,10 +81,9 @@
 </form>
 
 <br/>
-
-
 <hr>
-<h2>Comments</h2>
+<h2> {{total_comment}} Comments</h5> 
+
 {% if not post.comments.all %}
 
      {% include 'comment.html'%}

@@ -28,10 +28,7 @@ class HomeView(ListView):
         cat_menu = Category.objects.all()
         context = super(HomeView, self).get_context_data(*args, **kwargs)
         context["cat_menu"] = cat_menu
-
         post_items = Post.objects.all().order_by('-date')
-
-
         p = Paginator(post_items,5)
         page_num = self.request.GET.get('page',1)
 
@@ -56,16 +53,20 @@ class DetailsView(DetailView):
         cat_menu = Category.objects.all()
         context = super(DetailsView, self).get_context_data(*args, **kwargs)
 
-        count_total_likes = get_object_or_404(Post, id=self.kwargs['pk'])
-        total_likes = count_total_likes.get_total_likes()
+        current_post = get_object_or_404(Post, id=self.kwargs['pk'])
+
+        total_likes = current_post.get_total_likes()
+        
+        total_comment = Comment.objects.filter(post=current_post).count()
 
         liked = False
-        if count_total_likes.likes.filter(id = self.request.user.id).exists():
+        if current_post.likes.filter(id = self.request.user.id).exists():
             liked= True
         context["cat_menu"] = cat_menu
         context["total_likes"] =total_likes
         context["liked"] = liked
         context["commentform"] = AddCommentForms()
+        context["total_comment"] = total_comment
         return context  
 
     def post(self,request,pk):
