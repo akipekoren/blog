@@ -9,8 +9,6 @@ from ckeditor_uploader.fields import RichTextUploadingField
 
 class Category(models.Model):
     name = models.CharField(max_length=300)
-
-
     def __str__(self):
         return self.name
 
@@ -70,8 +68,24 @@ class Comment(models.Model):
     name = models.CharField(max_length=255)
     body = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, related_name = "comment_users", on_delete = models.CASCADE)
 
 
     def __str__(self):
         return '%s - %s ' % (self.post.title, self.name)
  
+
+
+
+
+"""
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    post = models.ForeignKey(Post, on_delete =models.CASCADE)
+    value = models.CharField(choices=LIKE_CHOICES, default='Like', max_length=10)
+
+
+    def __str__(self):
+        return str(self.post)
+
+"""
