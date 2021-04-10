@@ -7,6 +7,14 @@ from ckeditor_uploader.fields import RichTextUploadingField
 
 
 
+
+POST_CHOICES = (
+    ("HighlySuggested",  "HighlySuggested"),
+    ("Normal", "Normal")  
+)
+
+
+
 class Category(models.Model):
     name = models.CharField(max_length=300)
     def __str__(self):
@@ -19,16 +27,18 @@ class Category(models.Model):
 
 
 
+
 class Post(models.Model):
     title = models.CharField(max_length=300)    
     author=models.ForeignKey(User,on_delete=models.CASCADE)
     body = RichTextUploadingField(blank=True, null=True)
     title_tag = models.CharField(max_length=200)
-    date = models.DateField(auto_now_add=True)
+    date = models.DateField(auto_now_add=True)  
     category = models.CharField(max_length=100, default='coding')
     likes = models.ManyToManyField(User, related_name='blog_posts',  blank=True)
     snippet = models.CharField(max_length=255)
     header_image = models.ImageField(null = True, blank = True, upload_to = "images/")
+    isSuggested = models.CharField(max_length=30, choices=POST_CHOICES, default = 0)
 
 
     def __str__(self):

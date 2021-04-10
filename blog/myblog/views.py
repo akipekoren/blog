@@ -1,10 +1,13 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Post,Category,Comment
 from .forms import PostForms,EditForms,AddCommentForms
 from django.urls import reverse_lazy,reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.core.paginator import Paginator, EmptyPage
+from django.views.decorators.csrf import csrf_exempt
+from django.template.loader import render_to_string
+from django.core import serializers
 
 
 # Create your views here.
@@ -22,14 +25,13 @@ class HomeView(ListView):
     ordering = ['-date']
     #ordering = ['-id']
 
-      
-
     def get_context_data(self,*args, **kwargs):
         cat_menu = Category.objects.all()
         context = super(HomeView, self).get_context_data(*args, **kwargs)
         context["cat_menu"] = cat_menu
         post_items = Post.objects.all().order_by('-date')
         p = Paginator(post_items,5)
+
         page_num = self.request.GET.get('page',1)
 
         try:
@@ -37,6 +39,9 @@ class HomeView(ListView):
         except EmptyPage:
             page = p.page(1)
 
+        
+        latest_posts = post_items[0:5]
+        context["latest_posts"] = latest_posts
         context["post_items"] = page
         return context
 
@@ -52,12 +57,16 @@ class DetailsView(DetailView):
         
         cat_menu = Category.objects.all()
         context = super(DetailsView, self).get_context_data(*args, **kwargs)
-
         current_post = get_object_or_404(Post, id=self.kwargs['pk'])
-
         total_likes = current_post.get_total_likes()
-        
         total_comment = Comment.objects.filter(post=current_post).count()
+
+
+        comments = Comment.objects.filter(post = current_post).order_by('-id')
+        paginator = Paginator(comments,5)
+        page_num = self.request.GET.get('page',1)
+        com_obj = paginator.get_page(page_num)
+           
 
         liked = False
         if current_post.likes.filter(id = self.request.user.id).exists():
@@ -67,6 +76,7 @@ class DetailsView(DetailView):
         context["liked"] = liked
         context["commentform"] = AddCommentForms()
         context["total_comment"] = total_comment
+        context["first_comments"] = com_obj
         return context  
 
     def post(self,request,pk):
@@ -77,7 +87,9 @@ class DetailsView(DetailView):
            obj.post = post
            obj.author = self.request.user
            obj.save()
-           return HttpResponseRedirect(reverse('article-detail', args=[str(pk)]))
+           
+           return redirect(reverse('article-detail', args=[str(pk)]))
+           #return HttpResponseRedirect(reverse('article-detail', args=[str(pk)]))
 
 
 
@@ -119,9 +131,12 @@ def CategoryListView(request):
     return render(request, 'categoryList.html',{'cat_menu_list' : cat_menu_list})
 
 
-def LikeView(request,pk):
-    post = get_object_or_404(Post, id=request.POST.get('post_id'))
-
+def LikeView(request):
+    #post = get_object_or_404(Post, id=request.POST.get('post_id'))
+    post = get_object_or_404(Post, id=request.POST.get('id'))
+    print(request)
+    print(post.id)
+    print(request)
     liked = False
     if post.likes.filter(id=request.user.id).exists():
         post.likes.remove(request.user)
@@ -129,5 +144,93 @@ def LikeView(request,pk):
     else:
         post.likes.add(request.user)
         liked=True
-    return HttpResponseRedirect(reverse('article-detail', args=[str(pk)]))
+
+    current_post = get_object_or_404(Post, id=post.id)
+    total_likes = current_post.get_total_likes()
+    context = {
+        "total_likes" :total_likes,
+        "liked" : liked,
+        "post" : current_post
+    }
+    if request.is_ajax():
+        html = render_to_string('like_section.html', context, request=request)
+        return JsonResponse({'form' : html})
+
+
+
+def load_more(request):
+
+    offset = int(request.POST['offset'])
+    current_post_id = request.POST['post_id']
+    current_post = get_object_or_404(Post, id=current_post_id)
+
+
+    limit = 5
+    comments= Comment.objects.filter(post=current_post).order_by('-id')[offset:offset + limit]
+
+    
+    totalData = Comment.objects.filter(post=current_post).count()
+
+    data = {}
+    comments_json = serializers.serialize('json', comments)
+    first_name_list = []
+    last_name_list = []
+    for each in comments:
+        first_name_list.append(each.user.first_name)
+        last_name_list.append(each.user.last_name)
+
+    return JsonResponse(data = {
+                        'comments' : comments_json,
+                        'totalResult' : totalData,
+                        'first_name_list' :first_name_list,
+                        'last_name_list' :last_name_list
+            
+    })
+
+
+
+def suggested_post_view(request):
+    posts = Post.objects.all().order_by('-date').filter(author = request.user)
+    return render(request, 'suggested-posts.html',{'posts' : posts})
+
+
+def change_suggestion_view(request):
+
+    post = get_object_or_404(Post, id=request.POST.get('id'))
+    print(post)
+    status = post.isSuggested
+    if status == "Normal":
+        post.isSuggested = "HighlySuggested"
+        print("a")
+        post.save()
+    else:
+        post.isSuggested = "Normal"
+        print("b")
+        post.save()
+
+    print(post.isSuggested )
+    context = {
+        "status" : post.isSuggested ,
+        "item" : post
+    }
+
+    if request.is_ajax():
+        html = render_to_string('suggestion-change-section.html', context, request=request)
+        
+        return JsonResponse({'form' : html})
+    
+
+
+def delete_comment(request,id):
+    print("in delete comment")
+    print(id)
+    comment = get_object_or_404(Comment, id=id) 
+
+    post = get_object_or_404(Post, comments =comment )
+    comment.delete()
+    return HttpResponseRedirect(reverse('article-detail', args=[str(post.id)]))
+ 
+
+    
+
 

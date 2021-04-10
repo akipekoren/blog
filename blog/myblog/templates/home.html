@@ -5,9 +5,11 @@
 
 
 <div class="row">
-<div class="col-sm-2">  
+<div class="col-sm-6">  
+
+  
 </div>
-<div class="text-center col-sm-8">
+<div class="text-center col-sm-9">
 <ul>
 {% for post in post_items %}
 
@@ -69,7 +71,9 @@
 
       <div class="card text-center" >
         {% if post.header_image %}
-        <img class="card-img-top" src="{{post.header_image.url}}" width="400" height="600" alt="Card image cap">
+        <a href = "{% url 'article-detail' post.pk %}">
+        <img class="card-img-top" src="{{post.header_image.url}}"  width="400" height="600" alt="Card image cap">
+        </a>
          {%endif%}
         <div class="card-body">
           <h3 class="card-title">{{post.title}}</h3>
@@ -126,8 +130,63 @@
 </div>
 
 
-<div class="col-sm-2">
-</div>
+  <div class="col-sm-2 ms-5">
+
+    <div class="card" style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title"> Our Favorites</h5>
+        
+        <p class="card-text">Suggested by authors.</p>
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item"> <a href="#" class="card-link link-dark">Berlin Gezi rehberi</a></li>
+        <li class="list-group-item"> <a href="#" class="card-link link-dark">Milano Gezi rehberi</a></li>
+        <li class="list-group-item"> <a href="#" class="card-link link-dark">Real Blog Post</a></li>
+        <li class="list-group-item"> <a href="#" class="card-link link-dark">Real Blog Post 2 </a></li>
+        <li class="list-group-item"> <a href="#" class="card-link link-dark">Real Blog Post 3 </a></li>
+      </ul>
+    </div>
+
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <div class="card" style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title">Recent Posts</h5>
+        <p class="card-text">Last added contents.</p>
+      </div>
+      <ul class="list-group list-group-flush">
+        {% for each in latest_posts %}
+        <li class="list-group-item"> <a href="{% url 'article-detail' each.pk %}" class="card-link link-dark">{{each.title}}</a></li>
+        {% endfor%}
+      </ul>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+  
+    <div class="card" style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title">Favorites Categories</h5>
+        <p class="card-text">Most liked categories.</p>
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item"> <a href="#" class="card-link link-dark">History</a></li>
+        <li class="list-group-item"> <a href="#" class="card-link link-dark">Travel</a></li>
+        <li class="list-group-item"> <a href="#" class="card-link link-dark">Sport</a></li>
+      </ul>
+   
+    </div>
+
+  </div>
+
+  
 </div>
 </br>
 </br>

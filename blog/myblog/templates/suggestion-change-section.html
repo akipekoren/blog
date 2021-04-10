@@ -1,0 +1,31 @@
+<head>
+    
+    <style>
+
+        .button-sg{
+            text-align: right;
+            margin-right: 10px;
+        }
+    </style>
+
+</head>
+
+<form id="sg-form" action = "{% url 'change-suggestion' %}" method="POST">
+{% csrf_token %}
+{% if item.isSuggested == "Normal" %}
+<div>
+ <i>{{item.title}}</i>
+ <div class="button-sg">
+<button type="submit"  id="sg-btn" class="sg-btn" value ={{item.id}} >Add</button>
+</div>
+</div>
+{% else %}
+<div>
+ <b><i>{{item.title}}</i></b>
+
+ <div class="button-sg">
+ </a> <button type="submit" id="sg-btn" class="sg-btn" value ={{item.id}} >Remove</button>
+</div>
+</div>
+{% endif %}
+</form>
