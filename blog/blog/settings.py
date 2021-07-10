@@ -13,13 +13,11 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-#ENV_PATH = os.path.abspath(os.path.dirname(__file__))  dont use
-
+# ENV_PATH = os.path.abspath(os.path.dirname(__file__))  dont use
 
 
 # Quick-start development settings - unsuitable for production
@@ -32,7 +30,6 @@ SECRET_KEY = ')&0kx$+n3l)=s4n10tno50eeeu(ws-^f7p*k#fc+q8@=$6!myc'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 
 # Application definition
@@ -57,8 +54,8 @@ INSTALLED_APPS = [
     'members',
     'ckeditor',
     'ckeditor_uploader',
-]
 
+]
 
 
 MIDDLEWARE = [
@@ -140,12 +137,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-MEDIA_URL = '/media/'   
-
+MEDIA_URL = '/media/'
 
 
 MEDIA_ROOT = BASE_DIR/'media'
- 
 
 
 STATICFILES_DIRS = [
@@ -155,3 +150,12 @@ STATICFILES_DIRS = [
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+
+
+# Email verification
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'hafiye.info@gmail.com'
+EMAIL_HOST_PASSWORD = 'Hafiye2020'
+EMAIL_PORT = 587
