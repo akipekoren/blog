@@ -1,22 +1,27 @@
 {% extends 'base.html' %}
-{% block content %}
+{% block content %} 
 {% if category_posts %}
 
-<h1 style="text-align: center; margin-top: 30px; color:black; font-style: italic;" > {{cats}} Articles </h1>
-<br/>
-<br/>
+<h1
+  style="text-align: center; margin-top: 30px; color: black; font-style: italic"
+>
+  {{cats}} Articles
+</h1>
+<br />
+<br />
+
+
 
 <head>
-
-{% load static %}
-    <link href="{% static 'blog/css/css/home.css' %}" rel="stylesheet">
-    <link href="{% static 'blog/css/css/read-button.css' %}" rel="stylesheet">
+  {% load static %}
+  <link href="{% static 'blog/css/css/home.css' %}" rel="stylesheet" />
+  <link href="{% static 'blog/css/css/read-button.css' %}" rel="stylesheet" />
 </head>
 
 <div class="container">
   <div class="text-center row">
-    {% for post in category_posts %} 
-      {% if forloop.counter0|divisibleby:2 %}
+    {% for post in category_posts %}
+    {% if forloop.counter0|divisibleby:2 %}
     <div class="col-lg-6">
       <div class="image-part">
         {% if post.header_image %}
@@ -42,14 +47,14 @@
                 </small></i
               ></b
             >
-            / {{post.date}}
-              {%if user.is_authenticated %} 
+            / {{post.date}} 
+              {%if user.is_authenticated %}
               {% if user.id == post.author.id%} /
             <small><a href="{% url 'edit-post' post.slug %}">Edit</a></small> /
             <small
               ><a href="{% url 'delete-post' post.slug %}">Delete</a></small
             >
-            {%endif%} 
+            {%endif%}
             {%endif%}
           </p>
 
@@ -99,14 +104,14 @@
               ></b
             >
             / {{post.date}} 
-              {%if user.is_authenticated %}
+              {%if user.is_authenticated %} 
               {% if user.id == post.author.id%} /
             <small><a href="{% url 'edit-post' post.slug %}">Edit</a></small> /
             <small
               ><a href="{% url 'delete-post' post.slug %}">Delete</a></small
             >
             {%endif%}
-              {%endif%}
+            {%endif%}
           </p>
 
           <div style="height: 200px">
@@ -138,9 +143,9 @@
 
 {% else %}
 
-<div  style="margin-top: 40px; text-align: center">
-<h4>Sorry this page is not exist</h4>
-<a style="color:gray" href="{% url 'home' %}">Go Main Page </a>
+<div style="margin-top: 40px; text-align: center">
+  <h4>Sorry this page is not exist</h4>
+  <a style="color: gray" href="{% url 'home' %}">Go Main Page </a>
 </div>
 {% endif %}
 {% endblock %}
